@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.nickname">
-    <div class="label">Nickname</div>
+    <div :class="$style.label">Nickname</div>
     <input
       :class="$style.nicknameInput"
       :value="nickname"
@@ -32,5 +32,9 @@ export default class Nickname extends Vue {
     max-width: 300px;
     padding: 8px;
     text-align: left;
+  }
+
+  .label {
+    margin-bottom: 8px;
   }
 </style>

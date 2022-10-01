@@ -1,8 +1,5 @@
 <template>
-  <button
-    :class="$style.startGameButton"
-    @click="event => $emit('click', event)"
-  />
+  <button :class="$style.startGameButton"/>
 </template>
 
 <script>

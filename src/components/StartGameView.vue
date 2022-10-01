@@ -2,7 +2,7 @@
   <div :class="$style.gameView">
     <slot name="inputs" :class="$style.inputs"/>
 
-    <StartButton/>
+    <StartButton @click="$emit('startGame')"/>
   </div>
 </template>
 
