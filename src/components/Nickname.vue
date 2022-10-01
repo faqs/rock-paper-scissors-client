@@ -1,9 +1,10 @@
 <template>
   <div :class="$style.nickname">
-    <span class="label">Nickname</span>
+    <div class="label">Nickname</div>
     <input
       :class="$style.nicknameInput"
       :value="nickname"
+      :disabled="isDisabled"
       @input.prevent="onNicknameChange"/>
   </div>
 </template>
@@ -14,6 +15,7 @@ import { Options, Vue } from 'vue-class-component';
 @Options({
   props: {
     nickname: String,
+    isDisabled: Boolean,
   },
 })
 export default class Nickname extends Vue {
@@ -27,7 +29,7 @@ export default class Nickname extends Vue {
 
 <style module>
   .nickname {
-    width: 200px;
+    max-width: 300px;
     padding: 8px;
     text-align: left;
   }
