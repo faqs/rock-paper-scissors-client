@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import GameView from '@/views/GameView.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,12 +11,17 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/new',
     name: 'newGame',
-    component: () => import(/* webpackChunkName: "about" */ '../views/NewGameView.vue'),
+    component: () => import(/* webpackChunkName: "newGame" */ '../views/NewGameView.vue'),
   },
   {
     path: '/connect',
     name: 'connectToGame',
-    component: () => import(/* webpackChunkName: "about" */ '../views/ConnectToGameView.vue'),
+    component: () => import(/* webpackChunkName: "connectToGame" */ '../views/ConnectToGameView.vue'),
+  },
+  {
+    path: '/game',
+    name: 'game',
+    component: GameView,
   },
 ];
 
