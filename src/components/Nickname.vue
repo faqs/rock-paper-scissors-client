@@ -2,6 +2,7 @@
   <div :class="$style.nickname">
     <div :class="$style.label">Nickname</div>
     <input
+      autocomplete="off"
       :class="$style.nicknameInput"
       :value="nickname"
       :disabled="isDisabled"

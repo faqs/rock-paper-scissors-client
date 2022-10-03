@@ -2,6 +2,7 @@
   <div :class="$style.gameId">
     <div :class="$style.label">Game Id</div>
     <input
+      autocomplete="off"
       :class="$style.gameIdInput"
       :value="gameId"
       :disabled="isDisabled"

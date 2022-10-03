@@ -2,6 +2,7 @@
   <div :class="$style.rounds">
     <div :class="$style.label">Rounds</div>
     <input
+      autocomplete="off"
       :class="$style.roundsInput"
       :value="rounds"
       :disabled="isDisabled"

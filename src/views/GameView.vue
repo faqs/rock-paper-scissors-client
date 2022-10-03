@@ -28,7 +28,7 @@
       />
     </div>
 
-    <StartButton @click="makeMove"/>
+    <StartButton @click="makeTurn"/>
   </div>
 </template>
 
@@ -66,7 +66,7 @@ export default class GameView extends Vue {
     this.selectedVariant = variant;
   }
 
-  makeMove(): void {
+  makeTurn(): void {
     console.log('make move function template');
   }
 }
