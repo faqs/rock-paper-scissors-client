@@ -23,7 +23,7 @@ export default class Nickname extends Vue {
   nickname!: string;
 
   onNicknameChange($event: any) {
-    this.$emit('update:nickname', $event.currentTarget.value );
+    this.$emit('update:nickname', $event.currentTarget.value);
   }
 }
 </script>
