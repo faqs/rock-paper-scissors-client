@@ -34,6 +34,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
+import store from '@/store';
 import StartPage from '@/components/StartPage.vue';
 import Nickname from '@/components/Nickname.vue';
 import StartGameView from '@/components/StartGameView.vue';
@@ -53,13 +54,22 @@ import { Variants } from '@/dictionary';
   },
 })
 export default class GameView extends Vue {
-  nickname = '';
-  round = 0;
-  gameId = 0;
   selectedVariant: Variants | null = null;
 
   get variants() {
     return Variants;
+  }
+
+  get nickname() {
+    return store.state.player.nickname;
+  }
+
+  get round() {
+    return store.state.game.currentRound;
+  }
+
+  get gameId() {
+    return store.state.game.id;
   }
 
   selectVariant(variant: Variants): void {
