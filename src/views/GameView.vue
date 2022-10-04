@@ -35,13 +35,14 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import store from '@/store';
+import { gameService } from '@/api/gameService';
+import { Variants } from '@/dictionary';
 import StartPage from '@/components/StartPage.vue';
 import Nickname from '@/components/Nickname.vue';
 import StartGameView from '@/components/StartGameView.vue';
 import Rounds from '@/components/Rounds.vue';
 import GameId from '@/components/GameId.vue';
 import StartButton from '@/components/StartButton.vue';
-import { Variants } from '@/dictionary';
 
 @Options({
   components: {
@@ -76,8 +77,24 @@ export default class GameView extends Vue {
     this.selectedVariant = variant;
   }
 
-  makeTurn(): void {
-    console.log('make move function template');
+  async makeTurn(): Promise<void> {
+    if (!this.selectedVariant || !this.nickname || !this.gameId) {
+      return;
+    }
+
+    const requestData = {
+      playerNickname: this.nickname,
+      gameId: this.gameId,
+      variant: this.selectedVariant,
+    };
+
+    const { data } = await gameService.makeTurn(requestData);
+
+    store.commit('setGameInfo', {
+      id: data.id,
+      totalRounds: data.totalRounds,
+      currentRound: data.currentRound,
+    });
   }
 }
 </script>
