@@ -42,11 +42,7 @@ export default class ConnectToGameView extends Vue {
       gameId: this.gameId,
     });
 
-    store.commit('setGameInfo', {
-      id: data.id,
-      totalRounds: data.totalRounds,
-      currentRound: data.currentRound,
-    });
+    store.commit('setGameInfo', data);
     store.commit('setPlayerInfo', { nickname: this.nickname });
 
     this.$router.push({ name: 'game' });

@@ -36,6 +36,8 @@
 import { Options, Vue } from 'vue-class-component';
 import store from '@/store';
 import { gameService } from '@/api/gameService';
+import SocketProvider from '@/socket/SocketProvider';
+import { formResultMessage } from '@/utils/helpers';
 import { Variants } from '@/dictionary';
 import StartPage from '@/components/StartPage.vue';
 import Nickname from '@/components/Nickname.vue';
@@ -88,12 +90,21 @@ export default class GameView extends Vue {
       variant: this.selectedVariant,
     };
 
-    const { data } = await gameService.makeTurn(requestData);
+    await gameService.makeTurn(requestData);
+  }
 
-    store.commit('setGameInfo', {
-      id: data.id,
-      totalRounds: data.totalRounds,
-      currentRound: data.currentRound,
+  created() {
+    SocketProvider.on('roundResult', ({
+      game,
+      winner,
+    }) => {
+      alert(formResultMessage(this.nickname, 'round', String(winner)));
+
+      store.commit('setGameInfo', game);
+
+      if (game.isFinished) {
+        this.$router.push({ name: 'gameResult' });
+      }
     });
   }
 }
