@@ -5,7 +5,7 @@
     </div>
     <div :class="$style.gameInfo">
       <GameId :game-id="gameId" is-disabled/>
-      <Rounds :rounds="round" is-disabled/>
+      <Rounds :rounds="round" is-disabled is-single/>
     </div>
     <div :class="$style.variants">
       <img
@@ -121,10 +121,15 @@ export default class GameView extends Vue {
   cursor: pointer;
   width: 100px;
   height: 140px;
+  border: 2px solid darkgrey;
+  border-radius: 4px;
+}
+
+.variants img:hover {
+  border-color: lightskyblue;
 }
 
 .variants img.selected {
-  width: 120px;
-  height: 168px;
+  border-color: lightgreen;
 }
 </style>

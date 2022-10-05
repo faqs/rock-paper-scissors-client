@@ -58,5 +58,6 @@ export default class ConnectToGameView extends Vue {
 .inputs {
   display: flex;
   justify-content: space-between;
+  margin-bottom: 40px;
 }
 </style>

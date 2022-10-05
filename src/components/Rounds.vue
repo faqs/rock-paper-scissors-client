@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.rounds">
-    <div :class="$style.label">Rounds</div>
+    <div :class="$style.label">{{isSingle ? 'Round' : 'Rounds'}}</div>
     <input
       autocomplete="off"
       :class="$style.roundsInput"
@@ -17,6 +17,7 @@ import { Options, Vue } from 'vue-class-component';
   props: {
     rounds: Number,
     isDisabled: Boolean,
+    isSingle: Boolean,
   },
 })
 export default class Rounds extends Vue {

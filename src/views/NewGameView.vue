@@ -56,5 +56,6 @@ export default class NewGameView extends Vue {
   .inputs {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 40px;
   }
 </style>

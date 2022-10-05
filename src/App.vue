@@ -16,5 +16,9 @@
 .app {
   margin: auto;
   width: 500px;
+  height: 600px;
+  padding: 16px 24px;
+  border: 1px solid lightgrey;
+  border-radius: 8px;
 }
 </style>
