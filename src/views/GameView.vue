@@ -28,7 +28,16 @@
       />
     </div>
 
-    <StartButton @click="makeTurn"/>
+    <PlayButton
+        v-if="!isTurnMade"
+        @click="makeTurn" :is-disabled="isMakeTurnButtonDisabled"
+    />
+    <div
+        v-else
+        :class="$style.watingMessage"
+    >
+      Wating other player turn
+    </div>
   </div>
 </template>
 
@@ -44,11 +53,11 @@ import Nickname from '@/components/Nickname.vue';
 import StartGameView from '@/components/StartGameView.vue';
 import Rounds from '@/components/Rounds.vue';
 import GameId from '@/components/GameId.vue';
-import StartButton from '@/components/StartButton.vue';
+import PlayButton from '@/components/PlayButton.vue';
 
 @Options({
   components: {
-    StartButton,
+    PlayButton,
     GameId,
     Rounds,
     StartGameView,
@@ -58,6 +67,7 @@ import StartButton from '@/components/StartButton.vue';
 })
 export default class GameView extends Vue {
   selectedVariant: Variants | null = null;
+  isTurnMade = false;
 
   get variants() {
     return Variants;
@@ -75,6 +85,10 @@ export default class GameView extends Vue {
     return store.state.game.id;
   }
 
+  get isMakeTurnButtonDisabled() {
+    return !this.selectedVariant;
+  }
+
   selectVariant(variant: Variants): void {
     this.selectedVariant = variant;
   }
@@ -84,13 +98,20 @@ export default class GameView extends Vue {
       return;
     }
 
+    this.isTurnMade = true;
+
     const requestData = {
       playerNickname: this.nickname,
       gameId: this.gameId,
       variant: this.selectedVariant,
     };
 
-    await gameService.makeTurn(requestData);
+    try {
+      await gameService.makeTurn(requestData);
+    } catch (error) {
+      alert(error);
+      this.isTurnMade = false;
+    }
   }
 
   created() {
@@ -104,6 +125,8 @@ export default class GameView extends Vue {
 
       if (game.isFinished) {
         this.$router.push({ name: 'gameResult' });
+      } else {
+        this.isTurnMade = false;
       }
     });
   }
@@ -142,5 +165,12 @@ export default class GameView extends Vue {
 
 .variants img.selected {
   border-color: lightgreen;
+}
+
+.watingMessage {
+  font-size: 14px;
+  line-height: 16px;
+  color: lightgray;
+  padding: 16px 8px;
 }
 </style>

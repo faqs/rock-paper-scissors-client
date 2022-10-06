@@ -1,6 +1,7 @@
 <template>
   <div class="connectToGame">
     <StartGameView
+        :is-start-button-disabled="isStartButtonDisabled"
         @startGame="connectToGame"
     >
       <template v-slot:inputs>
@@ -35,6 +36,10 @@ import GameId from '@/components/GameId.vue';
 export default class ConnectToGameView extends Vue {
   nickname = '';
   gameId = 0;
+
+  get isStartButtonDisabled() {
+    return !this.nickname || !this.gameId;
+  }
 
   async connectToGame(): Promise<void> {
     const { data } = await gameService.connectToGame({

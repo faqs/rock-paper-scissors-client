@@ -6,6 +6,12 @@
     ]">
       {{ resultMessage }}
     </h2>
+
+    <router-link
+        :to="{name: 'startPage'}"
+    >
+      <button :class="$style.newGame">Start another game</button>
+    </router-link>
   </div>
 </template>
 
@@ -45,5 +51,14 @@ export default class GameResultView extends Vue {
 
   .lost {
     color: indianred;
+  }
+
+  .newGame {
+    margin-top: 40px;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 20px;
+    color: #2c3e50;
+    cursor: pointer;
   }
 </style>

@@ -2,17 +2,20 @@
   <div :class="$style.gameView">
     <slot name="inputs" :class="$style.inputs"/>
 
-    <StartButton @click="$emit('startGame')"/>
+    <PlayButton @click="$emit('startGame')" :is-disabled="isStartButtonDisabled"/>
   </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import StartButton from '@/components/StartButton.vue';
+import PlayButton from '@/components/PlayButton.vue';
 
 @Options({
+  props: {
+    isStartButtonDisabled: Boolean,
+  },
   components: {
-    StartButton,
+    PlayButton,
   },
 })
 export default class StartGameView extends Vue {

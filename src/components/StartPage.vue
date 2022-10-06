@@ -3,13 +3,13 @@
     <nav :class="$style.menu">
       <router-link
           :class="$style.menuItem"
-          to="/new"
+          :to="{name: 'newGame'}"
       >
         <button :class="$style.menuItemButton">New game</button>
       </router-link>
       <router-link
           :class="$style.menuItem"
-          to="/connect"
+          :to="{name: 'connectToGame'}"
       >
         <button :class="$style.menuItemButton">Connect to existing game</button>
       </router-link>
@@ -38,5 +38,6 @@ export default class StartPage extends Vue {
   font-size: 16px;
   line-height: 20px;
   color: #2c3e50;
+  cursor: pointer;
 }
 </style>

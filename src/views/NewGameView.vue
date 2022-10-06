@@ -1,6 +1,7 @@
 <template>
   <div class="newGame">
     <StartGameView
+      :is-start-button-disabled="isStartButtonDisabled"
       @startGame="startNewGame"
     >
       <template v-slot:inputs>
@@ -33,6 +34,10 @@ import Rounds from '@/components/Rounds.vue';
 export default class NewGameView extends Vue {
   nickname = '';
   rounds = 0;
+
+  get isStartButtonDisabled() {
+    return !this.nickname || !this.rounds;
+  }
 
   async startNewGame(): Promise<void> {
     const { data } = await gameService.startNewGame({
