@@ -48,6 +48,7 @@ import { gameService } from '@/api/gameService';
 import SocketProvider from '@/socket/SocketProvider';
 import { formResultMessage } from '@/utils/helpers';
 import { Variants } from '@/dictionary';
+import { ROUTES_NAMES } from '@/router/routesNames';
 import StartPage from '@/components/StartPage.vue';
 import Nickname from '@/components/Nickname.vue';
 import StartGameView from '@/components/StartGameView.vue';
@@ -124,7 +125,7 @@ export default class GameView extends Vue {
       store.commit('setGameInfo', game);
 
       if (game.isFinished) {
-        this.$router.push({ name: 'gameResult' });
+        this.$router.push({ name: ROUTES_NAMES.GAME_RESULT });
       } else {
         this.isTurnMade = false;
       }

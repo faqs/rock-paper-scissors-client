@@ -8,7 +8,7 @@
     </h2>
 
     <router-link
-        :to="{name: 'startPage'}"
+        :to="{name: ROUTES.START_PAGE}"
     >
       <button :class="$style.newGame">Start another game</button>
     </router-link>
@@ -19,9 +19,14 @@
 import { Options, Vue } from 'vue-class-component';
 import store from '@/store';
 import { formResultMessage } from '@/utils/helpers';
+import { ROUTES_NAMES } from '@/router/routesNames';
 
 @Options({})
 export default class GameResultView extends Vue {
+  get ROUTES() {
+    return ROUTES_NAMES;
+  }
+
   get nickname() {
     return store.state.player.nickname;
   }
