@@ -15,3 +15,13 @@ export type MakeTurnDto = {
   variant: Variants;
   gameId: number;
 }
+
+export type PauseGameDto = {
+  playerNickname: string;
+  gameId: number;
+}
+
+export type ContinueGameDto = {
+  playerNickname: string;
+  gameId: number;
+}
