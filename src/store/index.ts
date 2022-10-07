@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import createPersistedState from 'vuex-persistedstate';
 import { GameInfo, PlayerInfo } from '@/store/types';
 import { Game } from '@/api/interfaces/game.interface';
 
@@ -38,4 +39,5 @@ export default createStore({
       state.player = playerInfo;
     },
   },
+  plugins: [createPersistedState()],
 });
