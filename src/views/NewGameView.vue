@@ -41,15 +41,19 @@ export default class NewGameView extends Vue {
   }
 
   async startNewGame(): Promise<void> {
-    const { data } = await gameService.startNewGame({
-      playerNickname: this.nickname,
-      totalRounds: this.rounds,
-    });
+    try {
+      const { data } = await gameService.startNewGame({
+        playerNickname: this.nickname,
+        totalRounds: this.rounds,
+      });
 
-    store.commit('setGameInfo', data);
-    store.commit('setPlayerInfo', { nickname: this.nickname });
+      store.commit('setGameInfo', data);
+      store.commit('setPlayerInfo', { nickname: this.nickname });
 
-    this.$router.push({ name: ROUTES_NAMES.GAME });
+      this.$router.push({ name: ROUTES_NAMES.GAME });
+    } catch (error: any) {
+      alert(error.response.data.message || error.message);
+    }
   }
 }
 </script>

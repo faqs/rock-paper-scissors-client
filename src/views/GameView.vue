@@ -42,6 +42,11 @@
     </div>
 
     <div :class="$style.pauseGameButtonContainer">
+      <router-link :to="{name: ROUTES.START_PAGE}">
+        <button :class="$style.goToStartPageButton">
+          Go to start page
+        </button>
+      </router-link>
 
       <button
           :class="$style.pauseGameButton"
@@ -82,6 +87,10 @@ import { GameSuspenseEvent } from '@/api/interfaces/game.interface';
 export default class GameView extends Vue {
   selectedVariant: Variants | null = null;
   isTurnMade = false;
+
+  get ROUTES() {
+    return ROUTES_NAMES;
+  }
 
   get variants() {
     return Variants;
@@ -140,8 +149,8 @@ export default class GameView extends Vue {
 
     try {
       await gameService.makeTurn(requestData);
-    } catch (error) {
-      alert(error);
+    } catch (error: any) {
+      alert(error.response.data.message || error.message);
       this.isTurnMade = false;
     }
   }
@@ -269,11 +278,16 @@ export default class GameView extends Vue {
   margin-top: 80px;
 }
 
+.goToStartPageButton,
 .pauseGameButton {
   font-weight: bold;
   font-size: 16px;
   line-height: 20px;
   color: #2c3e50;
   cursor: pointer;
+}
+
+.goToStartPageButton {
+  margin-right: 16px;
 }
 </style>

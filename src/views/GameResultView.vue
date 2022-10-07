@@ -7,9 +7,7 @@
       {{ resultMessage }}
     </h2>
 
-    <router-link
-        :to="{name: ROUTES.START_PAGE}"
-    >
+    <router-link :to="{name: ROUTES.START_PAGE}">
       <button :class="$style.newGame">Start another game</button>
     </router-link>
   </div>
