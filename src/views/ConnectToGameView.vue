@@ -18,6 +18,7 @@
 import { Options, Vue } from 'vue-class-component';
 import store from '@/store';
 import { gameService } from '@/api/gameService';
+import { ROUTES_NAMES } from '@/router/routesNames';
 import StartPage from '@/components/StartPage.vue';
 import Nickname from '@/components/Nickname.vue';
 import StartGameView from '@/components/StartGameView.vue';
@@ -42,15 +43,19 @@ export default class ConnectToGameView extends Vue {
   }
 
   async connectToGame(): Promise<void> {
-    const { data } = await gameService.connectToGame({
-      playerNickname: this.nickname,
-      gameId: this.gameId,
-    });
+    try {
+      const { data } = await gameService.connectToGame({
+        playerNickname: this.nickname,
+        gameId: this.gameId,
+      });
 
-    store.commit('setGameInfo', data);
-    store.commit('setPlayerInfo', { nickname: this.nickname });
+      store.commit('setGameInfo', data);
+      store.commit('setPlayerInfo', { nickname: this.nickname });
 
-    this.$router.push({ name: 'game' });
+      this.$router.push({ name: ROUTES_NAMES.GAME });
+    } catch (error: any) {
+      alert(error.response.data.message || error.message);
+    }
   }
 }
 </script>

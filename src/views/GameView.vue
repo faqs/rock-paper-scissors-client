@@ -30,13 +30,30 @@
 
     <PlayButton
         v-if="!isTurnMade"
-        @click="makeTurn" :is-disabled="isMakeTurnButtonDisabled"
+        :is-disabled="isMakeTurnButtonDisabled"
+        :title="makeTurnButtonTooltip"
+        @click="makeTurn"
     />
     <div
         v-else
         :class="$style.watingMessage"
     >
       Wating other player turn
+    </div>
+
+    <div :class="$style.pauseGameButtonContainer">
+      <router-link :to="{name: ROUTES.START_PAGE}">
+        <button :class="$style.goToStartPageButton">
+          Go to start page
+        </button>
+      </router-link>
+
+      <button
+          :class="$style.pauseGameButton"
+          @click="() => isGamePausedByMe ? continueGame() : pauseGame()"
+      >
+        {{ isGamePausedByMe ? 'Continue game' : 'Pause game'}}
+      </button>
     </div>
   </div>
 </template>
@@ -48,12 +65,14 @@ import { gameService } from '@/api/gameService';
 import SocketProvider from '@/socket/SocketProvider';
 import { formResultMessage } from '@/utils/helpers';
 import { Variants } from '@/dictionary';
+import { ROUTES_NAMES } from '@/router/routesNames';
 import StartPage from '@/components/StartPage.vue';
 import Nickname from '@/components/Nickname.vue';
 import StartGameView from '@/components/StartGameView.vue';
 import Rounds from '@/components/Rounds.vue';
 import GameId from '@/components/GameId.vue';
 import PlayButton from '@/components/PlayButton.vue';
+import { GameSuspenseEvent } from '@/api/interfaces/game.interface';
 
 @Options({
   components: {
@@ -68,6 +87,10 @@ import PlayButton from '@/components/PlayButton.vue';
 export default class GameView extends Vue {
   selectedVariant: Variants | null = null;
   isTurnMade = false;
+
+  get ROUTES() {
+    return ROUTES_NAMES;
+  }
 
   get variants() {
     return Variants;
@@ -85,11 +108,29 @@ export default class GameView extends Vue {
     return store.state.game.id;
   }
 
-  get isMakeTurnButtonDisabled() {
-    return !this.selectedVariant;
+  get isGamePaused() {
+    return store.state.game.isPaused;
+  }
+
+  get isGamePausedByMe() {
+    const playerField = store.state.game.firstPlayer?.nickname === this.nickname ? 'firstPlayer' : 'secondPlayer';
+
+    return store.state.game.isPaused && store.state.game[playerField]?.isGamePaused;
+  }
+
+  get isMakeTurnButtonDisabled(): boolean {
+    return !this.selectedVariant || this.isGamePaused;
+  }
+
+  get makeTurnButtonTooltip(): string {
+    return this.isMakeTurnButtonDisabled ? 'You need to select variant' : '';
   }
 
   selectVariant(variant: Variants): void {
+    if (this.isTurnMade || this.isGamePaused) {
+      return;
+    }
+
     this.selectedVariant = variant;
   }
 
@@ -108,10 +149,42 @@ export default class GameView extends Vue {
 
     try {
       await gameService.makeTurn(requestData);
-    } catch (error) {
-      alert(error);
+    } catch (error: any) {
+      alert(error.response.data.message || error.message);
       this.isTurnMade = false;
     }
+  }
+
+  async toggleGamePause(isPaused: boolean) {
+    const method = isPaused ? 'pauseGame' : 'continueGame';
+
+    const { data } = await gameService[method]({
+      playerNickname: this.nickname,
+      gameId: this.gameId!,
+    });
+
+    store.commit('setGameInfo', data);
+  }
+
+  async pauseGame() {
+    await this.toggleGamePause(true);
+  }
+
+  async continueGame() {
+    await this.toggleGamePause(false);
+  }
+
+  handleGameSuspense({
+    game,
+    playerNickname,
+  }: GameSuspenseEvent, actionName: string) {
+    if (game.id !== this.gameId || playerNickname === this.nickname) {
+      return;
+    }
+
+    alert(`Other player ${actionName} the game`);
+
+    store.commit('setGameInfo', game);
   }
 
   created() {
@@ -119,16 +192,41 @@ export default class GameView extends Vue {
       game,
       winner,
     }) => {
+      if (game.id !== this.gameId) {
+        return;
+      }
+
       alert(formResultMessage(this.nickname, 'round', String(winner)));
 
       store.commit('setGameInfo', game);
 
       if (game.isFinished) {
-        this.$router.push({ name: 'gameResult' });
+        this.$router.push({ name: ROUTES_NAMES.GAME_RESULT });
       } else {
         this.isTurnMade = false;
+        this.selectedVariant = null;
       }
     });
+
+    SocketProvider.on('gamePaused', (eventData) => {
+      this.handleGameSuspense(eventData, 'paused');
+    });
+
+    SocketProvider.on('gameContinued', (eventData) => {
+      this.handleGameSuspense(eventData, 'continued');
+    });
+
+    SocketProvider.on('playerConnected', (eventData) => {
+      this.handleGameSuspense(eventData, 'connected');
+    });
+  }
+
+  unmounted() {
+    SocketProvider.off('roundResult');
+    SocketProvider.off('gamePaused');
+    SocketProvider.off('gameContinued');
+    SocketProvider.off('playerConnected');
+    this.pauseGame();
   }
 }
 </script>
@@ -172,5 +270,24 @@ export default class GameView extends Vue {
   line-height: 16px;
   color: lightgray;
   padding: 16px 8px;
+}
+
+.pauseGameButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 80px;
+}
+
+.goToStartPageButton,
+.pauseGameButton {
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 20px;
+  color: #2c3e50;
+  cursor: pointer;
+}
+
+.goToStartPageButton {
+  margin-right: 16px;
 }
 </style>

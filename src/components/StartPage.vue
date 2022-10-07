@@ -3,13 +3,13 @@
     <nav :class="$style.menu">
       <router-link
           :class="$style.menuItem"
-          :to="{name: 'newGame'}"
+          :to="{name: ROUTES.NEW_GAME}"
       >
         <button :class="$style.menuItemButton">New game</button>
       </router-link>
       <router-link
           :class="$style.menuItem"
-          :to="{name: 'connectToGame'}"
+          :to="{name: ROUTES.CONNECT_TO_GAME}"
       >
         <button :class="$style.menuItemButton">Connect to existing game</button>
       </router-link>
@@ -19,8 +19,12 @@
 
 <script lang="ts">
 import { Vue } from 'vue-class-component';
+import { ROUTES_NAMES } from '@/router/routesNames';
 
 export default class StartPage extends Vue {
+  get ROUTES() {
+    return ROUTES_NAMES;
+  }
 }
 </script>
 
