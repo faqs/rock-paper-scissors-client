@@ -10,6 +10,7 @@ const state: {
     id: null,
     totalRounds: null,
     currentRound: null,
+    isPaused: false,
     isFinished: false,
   },
   player: {
@@ -25,6 +26,9 @@ export default createStore({
         id: gameInfo.id,
         totalRounds: gameInfo.totalRounds,
         currentRound: gameInfo.currentRound,
+        firstPlayer: gameInfo.firstPlayer,
+        secondPlayer: gameInfo.secondPlayer,
+        isPaused: gameInfo.isPaused,
         isFinished: gameInfo.isFinished,
         gameWinner: gameInfo.gameWinner,
       };

@@ -30,13 +30,25 @@
 
     <PlayButton
         v-if="!isTurnMade"
-        @click="makeTurn" :is-disabled="isMakeTurnButtonDisabled"
+        :is-disabled="isMakeTurnButtonDisabled"
+        :title="makeTurnButtonTooltip"
+        @click="makeTurn"
     />
     <div
         v-else
         :class="$style.watingMessage"
     >
       Wating other player turn
+    </div>
+
+    <div :class="$style.pauseGameButtonContainer">
+
+      <button
+          :class="$style.pauseGameButton"
+          @click="() => isGamePausedByMe ? continueGame() : pauseGame()"
+      >
+        {{ isGamePausedByMe ? 'Continue game' : 'Pause game'}}
+      </button>
     </div>
   </div>
 </template>
@@ -55,6 +67,7 @@ import StartGameView from '@/components/StartGameView.vue';
 import Rounds from '@/components/Rounds.vue';
 import GameId from '@/components/GameId.vue';
 import PlayButton from '@/components/PlayButton.vue';
+import { GameSuspenseEvent } from '@/api/interfaces/game.interface';
 
 @Options({
   components: {
@@ -86,11 +99,29 @@ export default class GameView extends Vue {
     return store.state.game.id;
   }
 
-  get isMakeTurnButtonDisabled() {
-    return !this.selectedVariant;
+  get isGamePaused() {
+    return store.state.game.isPaused;
+  }
+
+  get isGamePausedByMe() {
+    const playerField = store.state.game.firstPlayer?.nickname === this.nickname ? 'firstPlayer' : 'secondPlayer';
+
+    return store.state.game.isPaused && store.state.game[playerField]?.isGamePaused;
+  }
+
+  get isMakeTurnButtonDisabled(): boolean {
+    return !this.selectedVariant || this.isGamePaused;
+  }
+
+  get makeTurnButtonTooltip(): string {
+    return this.isMakeTurnButtonDisabled ? 'You need to select variant' : '';
   }
 
   selectVariant(variant: Variants): void {
+    if (this.isTurnMade || this.isGamePaused) {
+      return;
+    }
+
     this.selectedVariant = variant;
   }
 
@@ -115,11 +146,49 @@ export default class GameView extends Vue {
     }
   }
 
+  async toggleGamePause(isPaused: boolean) {
+    const method = isPaused ? 'pauseGame' : 'continueGame';
+
+    const { data } = await gameService[method]({
+      playerNickname: this.nickname,
+      gameId: this.gameId!,
+    });
+
+    store.commit('setGameInfo', data);
+  }
+
+  async pauseGame() {
+    await this.toggleGamePause(true);
+  }
+
+  async continueGame() {
+    await this.toggleGamePause(false);
+  }
+
+  handleGameSuspense({
+    game,
+    playerNickname,
+  }: GameSuspenseEvent, isPaused: boolean) {
+    if (game.id !== this.gameId || playerNickname === this.nickname) {
+      return;
+    }
+
+    const action = isPaused ? 'paused' : 'continued';
+
+    alert(`Other player ${action} the game`);
+
+    store.commit('setGameInfo', game);
+  }
+
   created() {
     SocketProvider.on('roundResult', ({
       game,
       winner,
     }) => {
+      if (game.id !== this.gameId) {
+        return;
+      }
+
       alert(formResultMessage(this.nickname, 'round', String(winner)));
 
       store.commit('setGameInfo', game);
@@ -128,8 +197,24 @@ export default class GameView extends Vue {
         this.$router.push({ name: ROUTES_NAMES.GAME_RESULT });
       } else {
         this.isTurnMade = false;
+        this.selectedVariant = null;
       }
     });
+
+    SocketProvider.on('gamePaused', (eventData) => {
+      this.handleGameSuspense(eventData, true);
+    });
+
+    SocketProvider.on('gameContinued', (eventData) => {
+      this.handleGameSuspense(eventData, false);
+    });
+  }
+
+  unmounted() {
+    SocketProvider.off('roundResult');
+    SocketProvider.off('gamePaused');
+    SocketProvider.off('gameContinued');
+    this.pauseGame();
   }
 }
 </script>
@@ -173,5 +258,19 @@ export default class GameView extends Vue {
   line-height: 16px;
   color: lightgray;
   padding: 16px 8px;
+}
+
+.pauseGameButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 80px;
+}
+
+.pauseGameButton {
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 20px;
+  color: #2c3e50;
+  cursor: pointer;
 }
 </style>
