@@ -4,4 +4,5 @@ export interface ServerToClientEvents {
   roundResult: (roundResult: RoundResult) => void;
   gamePaused: (eventData: GameSuspenseEvent) => void;
   gameContinued: (eventData: GameSuspenseEvent) => void;
+  playerConnected: (eventData: GameSuspenseEvent) => void;
 }

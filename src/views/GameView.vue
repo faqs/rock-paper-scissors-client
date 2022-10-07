@@ -168,14 +168,12 @@ export default class GameView extends Vue {
   handleGameSuspense({
     game,
     playerNickname,
-  }: GameSuspenseEvent, isPaused: boolean) {
+  }: GameSuspenseEvent, actionName: string) {
     if (game.id !== this.gameId || playerNickname === this.nickname) {
       return;
     }
 
-    const action = isPaused ? 'paused' : 'continued';
-
-    alert(`Other player ${action} the game`);
+    alert(`Other player ${actionName} the game`);
 
     store.commit('setGameInfo', game);
   }
@@ -202,11 +200,15 @@ export default class GameView extends Vue {
     });
 
     SocketProvider.on('gamePaused', (eventData) => {
-      this.handleGameSuspense(eventData, true);
+      this.handleGameSuspense(eventData, 'paused');
     });
 
     SocketProvider.on('gameContinued', (eventData) => {
-      this.handleGameSuspense(eventData, false);
+      this.handleGameSuspense(eventData, 'continued');
+    });
+
+    SocketProvider.on('playerConnected', (eventData) => {
+      this.handleGameSuspense(eventData, 'connected');
     });
   }
 
@@ -214,6 +216,7 @@ export default class GameView extends Vue {
     SocketProvider.off('roundResult');
     SocketProvider.off('gamePaused');
     SocketProvider.off('gameContinued');
+    SocketProvider.off('playerConnected');
     this.pauseGame();
   }
 }
