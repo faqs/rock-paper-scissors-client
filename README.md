@@ -12,5 +12,5 @@ npm run serve
 
 ### View app
 ```
-open localhost:8080 in browser
+open url(usually http://localhost:8080) shown in terminal in browser window
 ```
